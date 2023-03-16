@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+
+  app_webserver:
+    build: ./etc/nginx/
+    container_name: app_webserver
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./../../ileti:/var/www/ileti
+    links:
+      - app_mysql
+    networks:
+      - app-network
+
+  app_mysql:
+    image: mysql:latest
+    container_name: app_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: ileti
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./etc/mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - app-network
+
+  app_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: app_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: app_mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: "root"
+    ports:
+      - "8080:80"
+    links:
+      - app_mysql
+    networks:
+      - app-network
+
+  app_redis:
+    image: redis:latest
+    container_name: app_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

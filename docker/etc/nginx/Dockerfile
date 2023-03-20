@@ -45,6 +45,6 @@ RUN sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
 # Expose ports.
 EXPOSE 80
 #EXPOSE 443
-WORKDIR /var/www/ileti
+WORKDIR /var/www/rub
 
 CMD service php8.1-fpm start && nginx -g "daemon off;"
